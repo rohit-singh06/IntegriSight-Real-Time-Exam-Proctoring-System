@@ -1,0 +1,17 @@
+# Generic
+.DS_Store
+.idea/
+.vscode/
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# Backend
+ai_engine/__pycache__/
+*.pyc
+
+# Frontend
+node_modules/
+dist/
