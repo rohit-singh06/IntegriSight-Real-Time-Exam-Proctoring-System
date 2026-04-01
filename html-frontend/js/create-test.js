@@ -353,7 +353,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Setup API Key - using environment mock if not available.
         // We will hit a generic fallback mock if OpenRouter key is missing.
-        const OPENROUTER_API_KEY = "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";
+        const OPENROUTER_API_KEY = window.CONFIG ? CONFIG.OPENROUTER_API_KEY : "";
         
         elements.aiErr.classList.add('hidden');
         document.getElementById('ai-btn-text').textContent = "Generating...";
