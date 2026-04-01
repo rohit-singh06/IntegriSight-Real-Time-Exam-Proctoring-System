@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntegriSight - Exam Environment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/student-view.css">
+</head>
+<body>
+
+    <!-- PHASE 1: GATE -->
+    <div id="gate-phase" class="gate-container hidden">
+        <div class="navbar">
+            <div class="nav-brand">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span>IntegriSight</span>
+            </div>
+        </div>
+        
+        <div class="gate-center">
+            <div class="gate-card fade-in">
+                <h1 class="gate-title" id="gate-test-title">Loading Test...</h1>
+                
+                <div class="gate-stats-grid">
+                    <div class="gate-stat-box">
+                        <div class="gate-stat-label">Subject</div>
+                        <div class="gate-stat-val" id="gate-subject">--</div>
+                    </div>
+                    <div class="gate-stat-box">
+                        <div class="gate-stat-label">Duration</div>
+                        <div class="gate-stat-val" id="gate-duration">-- mins</div>
+                    </div>
+                    <div class="gate-stat-box">
+                        <div class="gate-stat-label">Total Marks</div>
+                        <div class="gate-stat-val" id="gate-marks">--</div>
+                    </div>
+                    <div class="gate-stat-box">
+                        <div class="gate-stat-label">Questions</div>
+                        <div class="gate-stat-val" id="gate-questions">--</div>
+                    </div>
+                </div>
+
+                <div class="gate-instructions">
+                    <div style="font-weight: 600; color: #fff; margin-bottom: 8px;">Instructions:</div>
+                    <span id="gate-instructions-text">1. Read all questions carefully.\n2. Submit before time expires.</span>
+                </div>
+
+                <div class="gate-camera-box">
+                    <div class="gate-vid-wrapper">
+                        <video id="gate-video" autoplay playsinline muted style="width: 100%; height: 100%; object-fit: cover;"></video>
+                        <div id="gate-camera-err-overlay" class="hidden" style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(224,92,92,0.2);">
+                            <span style="color: #e05c5c; font-size: 20px;">&times;</span>
+                        </div>
+                    </div>
+                    <div style="flex: 1;">
+                        <div id="gate-camera-status" style="font-size: 14px; font-weight: 600; color: #10b981; display: flex; align-items: center; gap: 6px; margin-bottom: 4px;">
+                            Camera ready
+                        </div>
+                        <div style="font-size: 12px; color: #888;">Required for identity verification and AI proctoring.</div>
+                    </div>
+                </div>
+
+                <label class="gate-checkbox-row">
+                    <input type="checkbox" id="gate-agree-check">
+                    <span style="font-size: 13px;">I have read and agree to the exam instructions and proctoring rules.</span>
+                </label>
+
+                <button id="gate-begin-btn" class="btn-begin disabled" disabled>Begin Exam</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- PHASE 2: ACTIVE -->
+    <div id="active-phase" class="active-container hidden">
+        
+        <!-- Review Modal -->
+        <div id="review-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div style="font-size: 20px; color: white; font-weight: 600;">Review Your Answers</div>
+                <div style="font-size: 14px; color: #888; margin-bottom: 20px; margin-top: 4px;">Make sure you've answered all questions before submitting.</div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                    <div style="background: rgba(255,255,255,0.04); padding: 16px; border-radius: 8px;">
+                        <div style="font-size: 11px; color: #888; text-transform: uppercase;">Total Questions</div>
+                        <div style="font-size: 20px; color: white; font-weight: 600;" id="modal-total">0</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.04); padding: 16px; border-radius: 8px;">
+                        <div style="font-size: 11px; color: #888; text-transform: uppercase;">Answered</div>
+                        <div style="font-size: 20px; color: white; font-weight: 600;" id="modal-answered">0</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.04); padding: 16px; border-radius: 8px;">
+                        <div style="font-size: 11px; color: #888; text-transform: uppercase;">Unanswered</div>
+                        <div style="font-size: 20px; color: white; font-weight: 600;" id="modal-unanswered">0</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.04); padding: 16px; border-radius: 8px;">
+                        <div style="font-size: 11px; color: #888; text-transform: uppercase;">Time Remaining</div>
+                        <div style="font-size: 20px; color: white; font-weight: 600;" id="modal-time">00:00</div>
+                    </div>
+                </div>
+
+                <div id="modal-unanswered-list-container" class="hidden" style="margin-bottom: 24px;">
+                    <div style="font-size: 13px; color: #888; margin-bottom: 8px;">Unanswered Questions:</div>
+                    <div id="modal-unanswered-pills" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button id="modal-back-btn" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 500;">Go Back & Review</button>
+                    <button id="modal-submit-final-btn" style="background: #e05c5c; border: none; color: white; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: 600;">Submit Exam</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="top-bar">
+            <div class="nav-brand">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                </svg>
+                <span style="font-size: 14px;">IntegriSight</span>
+            </div>
+            <div id="active-test-title" style="font-size: 15px; color: white; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 40%;">
+                Test Title
+            </div>
+            <div id="main-timer" class="timer-badge timer-normal">
+                00:00
+            </div>
+        </div>
+
+        <div class="main-area">
+            <div class="left-sidebar">
+                <div class="active-vid-wrapper">
+                    <video id="active-video" autoplay playsinline muted></video>
+                    <canvas id="active-canvas" style="display: none;"></canvas>
+                    <div class="monitoring-badge" id="monitor-badge">
+                        <div class="dot" style="background:#10b981;"></div>
+                        <span style="color:#10b981;" id="monitor-badge-text">Monitoring</span>
+                    </div>
+                </div>
+
+                <div id="recent-violations-stack" style="margin-top: 14px; display: flex; flex-direction: column; gap: 8px;">
+                </div>
+
+                <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+                    <div class="v-stat-row">
+                        <span style="font-size: 13px;">👁 Gaze Away</span>
+                        <span id="stat-gaze-away" style="font-size: 18px; color: white; font-weight: 700;">0</span>
+                    </div>
+                    <div class="v-stat-row">
+                        <span style="font-size: 13px;">🚫 Face Hidden</span>
+                        <span id="stat-face-hidden" style="font-size: 18px; color: white; font-weight: 700;">0</span>
+                    </div>
+                    <div class="v-stat-row">
+                        <span style="font-size: 13px;">👥 Multiple Faces</span>
+                        <span id="stat-multi-face" style="font-size: 18px; color: white; font-weight: 700;">0</span>
+                    </div>
+                </div>
+
+                <div style="margin-top: 16px;">
+                    <div style="font-size: 12px; color: #888; text-transform: uppercase; margin-bottom: 4px;">Risk Score</div>
+                    <div id="active-risk-text" style="font-size: 32px; font-weight: 800; color: #10b981;">0</div>
+                    <div class="risk-bar-container">
+                        <div class="risk-track">
+                            <div id="active-risk-fill" class="risk-fill" style="width: 0%; background: #10b981;"></div>
+                        </div>
+                        <div id="active-risk-sm" style="font-size: 12px; font-weight: 600; color: #10b981; min-width: 24px; text-align: right;">0</div>
+                    </div>
+                </div>
+
+                <button id="sidebar-submit-btn" class="btn-submit-exam">Submit Exam</button>
+            </div>
+
+            <div class="center-panel">
+                <div class="q-nav-bar">
+                    <div style="font-size: 12px; color: #666; margin-bottom: 8px;">Questions</div>
+                    <div id="q-nav-grid" class="q-grid">
+                    </div>
+                    <div style="display: flex; gap: 16px; margin-top: 12px; font-size: 10px; color: #888;">
+                        <div style="display: flex; gap: 4px; align-items: center;"><div style="width: 10px; height: 10px; background: #6352dd; border-radius: 2px;"></div> Current</div>
+                        <div style="display: flex; gap: 4px; align-items: center;"><div style="width: 10px; height: 10px; background: #10b981; border-radius: 2px;"></div> Answered</div>
+                        <div style="display: flex; gap: 4px; align-items: center;"><div style="width: 10px; height: 10px; background: #555; border-radius: 2px;"></div> Not Answered</div>
+                    </div>
+                </div>
+
+                <div id="q-card" class="q-card fade-in">
+                </div>
+
+                <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+                    <button id="btn-prev-q" style="background: transparent; border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-family: inherit;">&larr; Previous</button>
+                    
+                    <div id="q-status-badge"></div>
+                    
+                    <button id="btn-next-q" style="background: #6352dd; border: none; color: white; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: 500; font-family: inherit;">Next &rarr;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- PHASE 3: RESULT -->
+    <div id="result-phase" class="result-container hidden">
+        <div class="success-icon">
+            <svg width="40" height="40" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <div style="font-size: 28px; color: white; font-weight: 700;">Exam Submitted!</div>
+        <div id="result-time" style="font-size: 14px; color: #888; margin-top: 8px;">Submitted at --:--</div>
+
+        <div class="result-card">
+            <div id="result-score-big" style="font-size: 48px; font-weight: 800; color: #10b981;">
+                0 <span style="font-size: 24px; color: #666;">/ 0</span>
+            </div>
+            <div id="result-percent" style="font-size: 20px; color: #10b981; margin-top: 8px;">0%</div>
+            <div style="margin-top: 16px; display: inline-block; background: rgba(255,255,255,0.05); padding: 8px 24px; border-radius: 24px; font-size: 20px; font-weight: 800; color: white;">
+                Grade <span id="result-grade">F</span>
+            </div>
+            
+            <div style="height: 1px; background: rgba(255,255,255,0.08); margin: 24px 0;"></div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;">
+                <div>
+                    <div id="res-correct" style="font-size: 24px; color: white; font-weight: 600;">0</div>
+                    <div style="font-size: 12px; color: #10b981; text-transform: uppercase;">Correct</div>
+                </div>
+                <div>
+                    <div id="res-wrong" style="font-size: 24px; color: white; font-weight: 600;">0</div>
+                    <div style="font-size: 12px; color: #e05c5c; text-transform: uppercase;">Wrong</div>
+                </div>
+                <div>
+                    <div id="res-unattempt" style="font-size: 24px; color: white; font-weight: 600;">0</div>
+                    <div style="font-size: 12px; color: #888; text-transform: uppercase;">Unattempted</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="width: 100%; max-width: 480px; margin: 24px auto; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 24px;">
+            <div style="font-size: 15px; color: #888; margin-bottom: 16px;">Proctoring Summary</div>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 14px; color: #c0c0d8;">Gaze Away Flags</span>
+                    <span id="res-flags-gaze" style="font-size: 14px; color: white; font-weight: 600;">0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 14px; color: #c0c0d8;">Face Hidden Flags</span>
+                    <span id="res-flags-face" style="font-size: 14px; color: white; font-weight: 600;">0</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 14px; color: #c0c0d8;">Multiple Faces Flags</span>
+                    <span id="res-flags-multi" style="font-size: 14px; color: white; font-weight: 600;">0</span>
+                </div>
+            </div>
+            <div style="font-size: 12px; color: #888; text-transform: uppercase; margin-bottom: 4px;">Final Risk Score</div>
+            <div id="res-risk-val" style="font-size: 24px; font-weight: 800; color: #10b981;">0</div>
+            
+            <div class="risk-bar-container" style="margin-top: 4px;">
+                <div class="risk-track">
+                    <div id="res-risk-fill" class="risk-fill" style="width: 0%; background: #10b981;"></div>
+                </div>
+                <div id="res-risk-sm" style="font-size: 12px; font-weight: 600; color: #10b981; min-width: 24px; text-align: right;">0</div>
+            </div>
+        </div>
+
+        <button onclick="window.location.href='student-dashboard.html'" style="margin-top: 8px; background: #6352dd; border: none; color: white; padding: 14px 32px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;">
+            Return to Dashboard
+        </button>
+    </div>
+
+    <script src="js/mockStore.js"></script>
+    <script src="js/student-view.js"></script>
+</body>
+</html>

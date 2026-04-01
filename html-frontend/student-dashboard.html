@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntegriSight - Student Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/student-dashboard.css">
+</head>
+<body>
+    <!-- Navbar injected by JS based on role -->
+    <div class="navbar" id="navbar">
+        <div class="nav-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#6352dd" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>IntegriSight</span>
+        </div>
+        <div class="nav-links">
+            <a href="about.html" class="nav-item">About</a>
+            <a href="student-dashboard.html" class="nav-item active">Dashboard</a>
+            <a href="#my-tests-section" class="nav-item">My Tests</a>
+        </div>
+        <div class="nav-profile">
+            <div class="profile-info">
+                <div class="avatar" id="nav-avatar">U</div>
+                <div>
+                    <div class="user-name" id="nav-name">Loading...</div>
+                    <div class="user-role">STUDENT</div>
+                </div>
+            </div>
+            <div class="nav-divider"></div>
+            <button class="sign-out-btn" id="sign-out-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line>
+                </svg>
+                Sign Out
+            </button>
+        </div>
+    </div>
+
+    <!-- Dashboard Main -->
+    <div class="dashboard-content">
+        <!-- Header Row -->
+        <div class="header-row">
+            <div>
+                <h1 class="greeting-title" id="greeting-title">Loading... 👋</h1>
+                <div class="greeting-subtitle">Here are your upcoming and active exams.</div>
+            </div>
+            <div class="clock-panel">
+                <div class="date-text" id="date-text">-</div>
+                <div class="time-text" id="time-text">-</div>
+            </div>
+        </div>
+
+        <!-- Stats Row -->
+        <div class="stats-row" id="stats-container">
+            <div class="stat-card">
+                <div class="stat-title">Assigned Tests</div>
+                <div class="stat-value" id="stat-assigned">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Upcoming</div>
+                <div class="stat-value" id="stat-upcoming">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Completed</div>
+                <div class="stat-value" id="stat-completed">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-title">Violations</div>
+                <div class="stat-value danger" id="stat-violations">0</div>
+            </div>
+        </div>
+
+        <!-- Tests Section -->
+        <div style="margin-bottom: 40px;" id="my-tests-section">
+            <div class="tests-header">
+                <h2 class="tests-title">Your Tests</h2>
+                <div class="filter-group" id="filter-group">
+                    <!-- Filters populated by JS -->
+                </div>
+            </div>
+
+            <div id="tests-grid" class="tests-grid">
+                <!-- Test Cards populated here -->
+            </div>
+        </div>
+
+        <!-- Violations Section -->
+        <div>
+            <h2 class="tests-title" style="margin-bottom: 20px;">Recent Violation Log</h2>
+            <div class="violations-container" id="violations-container">
+                <!-- Table injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mockStore.js"></script>
+    <script src="js/student-dashboard.js"></script>
+</body>
+</html>

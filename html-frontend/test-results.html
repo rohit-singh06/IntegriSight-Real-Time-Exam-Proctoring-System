@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntegriSight - Test Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/test-results.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="proctor-dashboard.html" class="nav-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>IntegriSight</span>
+        </a>
+    </div>
+
+    <div class="container">
+        <button onclick="window.location.href='proctor-dashboard.html'" class="btn-back">&larr; Back to Dashboard</button>
+        
+        <h1 id="page-title" class="page-title">Loading...</h1>
+        <div class="page-subtitle">Overview of student performance and proctoring status</div>
+
+        <div class="table-wrapper">
+            <table class="rtable">
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Score</th>
+                        <th>Risk Score</th>
+                        <th>Status</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <!-- Populated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/mockStore.js"></script>
+    <script src="js/test-results.js"></script>
+</body>
+</html>

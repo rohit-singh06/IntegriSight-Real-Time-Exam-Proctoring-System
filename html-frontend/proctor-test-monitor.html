@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntegriSight - Live Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/proctor-test-monitor.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="proctor-dashboard.html" class="nav-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>IntegriSight</span>
+        </a>
+    </div>
+
+    <!-- Header Stats -->
+    <div class="monitor-header">
+        <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 4px;">
+                <button onclick="window.location.href='proctor-dashboard.html'" style="background: transparent; border: none; color: #888; cursor: pointer; display: flex; align-items: center; padding: 0;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                </button>
+                <h1 id="test-title" style="font-size: 20px; font-weight: 600; color: #fff; margin: 0;">Loading Test... (Live Monitor)</h1>
+                <span id="test-badge" style="background: rgba(16,185,129,0.15); color: #10b981; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; align-items: center; gap: 6px; display: none;">
+                    <div class="animate-pulse" style="width: 6px; height: 6px; border-radius: 50%; background: #10b981;"></div> ACTIVE
+                </span>
+            </div>
+            <div id="test-meta" style="font-size: 13px; color: #888; margin-left: 32px;">Real-time data sync active</div>
+        </div>
+        
+        <div style="display: flex; gap: 16px;">
+            <div class="stat-box">
+                <div class="stat-box-label">In Progress</div>
+                <div id="stat-prog" class="stat-box-val" style="color: #10b981;">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-label">Submitted</div>
+                <div id="stat-sub" class="stat-box-val" style="color: #6352dd;">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-box-label">Flagged</div>
+                <div id="stat-flag" class="stat-box-val" style="color: #e05c5c;">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-area">
+        <!-- Student Monitoring Grid -->
+        <div class="col-left">
+            <div id="student-grid" class="student-grid">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+
+        <!-- Sidebar Actions/Info -->
+        <div class="col-right">
+            <div class="tab-header" id="tabs">
+                <button class="tab-btn active" data-tab="overview">Overview</button>
+                <button class="tab-btn" data-tab="questions">Questions</button>
+            </div>
+
+            <div class="tab-content">
+                <!-- Overview Tab -->
+                <div id="tab-overview">
+                    <h2 style="font-size: 16px; font-weight: 600; color: #fff; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;">
+                        Violation Timeline
+                    </h2>
+                    <div id="timeline-empty" class="hidden" style="text-align: center; color: #888; margin-top: 40px; font-size: 13px;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 12px; opacity: 0.5;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                        <br/>
+                        No violations recorded yet. Waiting for events...
+                    </div>
+                    <div id="timeline-wrap" class="timeline-wrap hidden">
+                        <div class="timeline-line"></div>
+                        <div id="timeline-list"></div>
+                    </div>
+                </div>
+
+                <!-- Questions Tab -->
+                <div id="tab-questions" class="hidden">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.08);">
+                        <div style="font-size: 14px; color: #fff; font-weight: 600;">Test Questions</div>
+                        <div id="q-meta" style="font-size: 12px; color: #a78bfa; background: rgba(99,82,221,0.15); padding: 4px 10px; border-radius: 12px; font-weight: 500;">
+                            0 Questions
+                        </div>
+                    </div>
+                    <div id="q-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mockStore.js"></script>
+    <script src="js/proctor-test-monitor.js"></script>
+</body>
+</html>

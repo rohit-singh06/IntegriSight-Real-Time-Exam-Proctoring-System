@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntegriSight - Student Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/student-result.css">
+</head>
+<body>
+    <div class="navbar">
+        <a href="proctor-dashboard.html" class="nav-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>IntegriSight</span>
+        </a>
+    </div>
+
+    <div class="container">
+        <button id="btn-back" class="btn-back">&larr; Back to Test Results</button>
+        
+        <div class="header-row">
+            <div>
+                <h1 id="student-name" class="page-title">Loading...</h1>
+                <div id="meta-info" class="page-subtitle">Test: <span>--</span> &bull; Enrollment: --</div>
+            </div>
+            <div class="score-card">
+                <div class="score-label">Final Score</div>
+                <div id="final-score" class="score-val">-- <span>/ --</span></div>
+            </div>
+        </div>
+
+        <div class="grid-layout">
+            <!-- Left Col (Stats & Qs) -->
+            <div class="col-main">
+                <div class="panel">
+                    <h2 class="panel-title">Performance Metrics</h2>
+                    <div class="metrics-row">
+                        <div>
+                            <div class="score-label">Attempted</div>
+                            <div id="stat-attempt" class="metric-box-val">0 <span>/ 0</span></div>
+                        </div>
+                        <div>
+                            <div class="score-label">Correct</div>
+                            <div id="stat-correct" class="metric-box-val" style="color: #00daf3;">0</div>
+                        </div>
+                        <div>
+                            <div class="score-label">Incorrect</div>
+                            <div id="stat-incorrect" class="metric-box-val" style="color: #ffb4ab;">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <div class="table-header"><h2>Question Breakdown</h2></div>
+                    <table class="qtable">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">Q #</th>
+                                <th>Question Content</th>
+                                <th style="width: 120px;">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody id="q-table-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Col (Violations Sidebar) -->
+            <div>
+                <div class="panel sidebar-panel">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 class="panel-title" style="margin: 0;">AI Integrity Log</h2>
+                        <div id="risk-badge" class="risk-badge">Risk: 0%</div>
+                    </div>
+
+                    <div class="vio-boxes">
+                        <div class="vio-box">
+                            <div id="vio-gaze" class="vio-box-val" style="color: #ffd270;">0</div>
+                            <div class="score-label" style="font-size: 10px; margin-top: 4px;">Gaze Away</div>
+                        </div>
+                        <div class="vio-box">
+                            <div id="vio-face" class="vio-box-val" style="color: #ffb4ab;">0</div>
+                            <div class="score-label" style="font-size: 10px; margin-top: 4px;">No Face</div>
+                        </div>
+                        <div class="vio-box">
+                            <div id="vio-multi" class="vio-box-val" style="color: #d8b9ff;">0</div>
+                            <div class="score-label" style="font-size: 10px; margin-top: 4px;">Multiple</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div style="font-size: 12px; text-transform: uppercase; color: #c8c5cc; margin-bottom: 12px; font-weight: 500;">
+                            Timeline (<span id="vio-total">0</span> events)
+                        </div>
+                        <div id="timeline-list" class="timeline-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="js/mockStore.js"></script>
+    <script src="js/student-result.js"></script>
+</body>
+</html>

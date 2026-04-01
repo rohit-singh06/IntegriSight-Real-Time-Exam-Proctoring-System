@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntegriSight - Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+
+<body>
+    <div class="login-container">
+        <!-- LEFT PANEL -->
+        <div class="login-left-panel">
+            <!-- Layer 1 - Cursor-reactive radial glow -->
+            <div id="radial-glow-left"></div>
+
+            <!-- Layer 2 - Static ambient blobs -->
+            <div class="blob-1"></div>
+            <div class="blob-2"></div>
+
+            <!-- Layer 3 - Animated dot grid -->
+            <div id="dot-grid"></div>
+
+            <!-- Layer 4 - Floating geometric shapes -->
+            <div id="shape-1" class="shape-1-container">
+                <div class="shape-1-inner"></div>
+            </div>
+            <div class="shape-2"></div>
+            <div class="shape-3"></div>
+            <div class="shape-4"></div>
+            <div class="shape-5">
+                <svg viewBox="0 0 100 100">
+                    <polygon points="50 1 93 25 93 75 50 99 7 75 7 25" />
+                </svg>
+            </div>
+
+            <!-- Layer 5 - Panel content -->
+            <div class="panel-content">
+                <!-- Top section -->
+                <div class="brand-header">
+                    <div class="brand-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <div class="brand-title">IntegriSight</div>
+                </div>
+
+                <!-- Middle section -->
+                <div class="hero-section">
+                    <div class="hero-heading">
+                        <div class="hero-line-1">Secure.</div>
+                        <div class="hero-line-2">Intelligent.</div>
+                        <div class="hero-line-3">Assessments.</div>
+                    </div>
+
+                    <div class="hero-subtitle">
+                        AI-powered online proctoring ensuring academic integrity in real-time with comprehensive
+                        violation analytics.
+                    </div>
+
+                    <div class="hero-pills">
+                        <div class="pill">
+                            <div class="pill-dot green"></div>Real-time Detection
+                        </div>
+                        <div class="pill">
+                            <div class="pill-dot purple"></div>AI Proctoring
+                        </div>
+                        <div class="pill">
+                            <div class="pill-dot orange"></div>Risk Analytics
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL - LOGIN FORM -->
+        <div id="right-panel" class="login-right-panel">
+
+            <!-- Cursor Spotlight -->
+            <div id="cursor-spotlight" class="cursor-blob"></div>
+
+            <!-- 3D TILT FORM CARD -->
+            <div id="tilt-card" class="login-card">
+
+                <!-- Header -->
+                <div class="form-header">
+                    <div class="form-header-inner">
+                        <div>
+                            <div class="form-title">Welcome back</div>
+                            <div class="form-subtitle">Enter your credentials to access your portal</div>
+                        </div>
+                        <div class="form-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#6352dd" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Role Toggle -->
+                <div class="role-toggle">
+                    <div id="role-indicator"></div>
+
+                    <button type="button" class="role-btn" id="btn-student" style="color: white;">
+                        <span style="font-size: 14px; margin-right: 6px;">🎓</span> Student
+                    </button>
+                    <button type="button" class="role-btn" id="btn-proctor" style="color: rgba(255,255,255,0.4);">
+                        <span style="font-size: 14px; margin-right: 6px;">🔍</span> Proctor
+                    </button>
+                </div>
+
+                <form id="login-form" autocomplete="off">
+
+                    <!-- Email Field -->
+                    <div class="input-wrapper">
+                        <label class="input-label">Email address</label>
+                        <div class="input-container">
+                            <div class="input-icon-container">
+                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                    <polyline points="22,6 12,13 2,6" />
+                                </svg>
+                            </div>
+                            <input type="email" id="email-input" class="form-input" placeholder="name@example.com"
+                                autocomplete="off" required />
+                            <!-- Right animated checkmark -->
+                            <div id="email-checkmark">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="input-wrapper delay">
+                        <div class="label-row">
+                            <label class="input-label" style="margin-bottom: 0;">Password</label>
+                            <div class="forgot-password">Forgot password?</div>
+                        </div>
+                        <div class="input-container">
+                            <div class="input-icon-container">
+                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </div>
+                            <input type="password" id="password-input" class="form-input" placeholder="••••••••"
+                                autocomplete="new-password" required />
+                            <button type="button" id="toggle-password">
+                                <svg id="eye-icon-hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg id="eye-icon-visible" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                    style="display: none;">
+                                    <path
+                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                    </path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="error-message">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" style="width: 16px;">
+                            <path
+                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z">
+                            </path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <span id="error-text"></span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submit-btn">
+                        <div class="btn-shimmer-layer"></div>
+                        <div id="loading-spinner"></div>
+                        <span id="btn-text">Sign in to Student Portal</span>
+                    </button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mockStore.js"></script>
+    <script src="js/login.js"></script>
+</body>
+
+</html>

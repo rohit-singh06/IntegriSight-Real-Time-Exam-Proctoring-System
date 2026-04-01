@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntegriSight - Proctor Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/proctor-dashboard.css">
+    <!-- Chart.js Injection -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="glow-left"></div>
+    <div class="glow-right"></div>
+
+    <div class="navbar">
+        <a href="proctor-dashboard.html" class="nav-brand">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>IntegriSight</span>
+        </a>
+        <div class="nav-links">
+            <a href="proctor-dashboard.html" class="nav-link active">Dashboard</a>
+            <a href="create-test.html" class="nav-link">Assessments</a>
+            <a href="#manage-tests-section" class="nav-link" onclick="document.getElementById('manage-tests-section').scrollIntoView({behavior: 'smooth'}); return false;">Students</a>
+            <a href="#analytics-section" class="nav-link" onclick="document.getElementById('analytics-section').scrollIntoView({behavior: 'smooth'}); return false;">Reports</a>
+        </div>
+        <div class="nav-user">
+            <div class="nav-avatar" id="nav-initials">U</div>
+            <button id="btn-logout" class="btn-logout">Logout</button>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <!-- HEADER ROW -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 20px;">
+            <div style="display: flex; flex-direction: column; gap: 4px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div id="greeting-text" style="font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">Loading...</div>
+                    <div id="live-session-badge" class="hidden" style="display: flex; align-items: center; gap: 6px; background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.25); border-radius: 20px; padding: 4px 12px;">
+                        <div style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; animation: pulseDot 1.5s infinite;"></div>
+                        <div style="font-size: 11px; font-weight: 700; color: #10b981; letter-spacing: 0.08em;">LIVE SESSION</div>
+                    </div>
+                </div>
+                <div id="subject-text" style="font-size: 13px; color: #888899;">Subject · IntegriSight Proctor Portal</div>
+            </div>
+            
+            <div style="display: flex; gap: 12px; align-items: center;">
+                <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px 16px; display: flex; flex-direction: column;">
+                    <div id="clock-date" style="font-size: 12px; color: #888899;">--</div>
+                    <div id="clock-time" style="font-size: 18px; color: #ffffff; font-weight: 700; font-family: monospace;">--:--:--</div>
+                </div>
+                <button onclick="window.location.href='create-test.html'" style="background: linear-gradient(135deg, #6352dd, #8b5cf6); color: white; border: none; border-radius: 10px; padding: 12px 22px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 20px rgba(99,82,221,0.3); transition: all 0.2s; font-family: inherit;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Create New Test
+                </button>
+            </div>
+        </div>
+
+        <!-- STATS ROW -->
+        <div id="stats-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px;">
+            <!-- Populated via JS -->
+        </div>
+
+        <!-- QUICK ACTIONS BAR -->
+        <div style="display: flex; gap: 16px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 22px;">
+            <div onclick="window.location.href='create-test.html'" class="action-card">
+                <div style="width: 36px; height: 36px; border-radius: 10px; background: #6352dd; display: flex; align-items: center; justify-content: center; font-size: 18px; color: #fff;">+</div>
+                <div><div style="font-size: 14px; font-weight: 600; color: #ffffff;">Create Test</div><div style="font-size: 12px; color: #555; margin-top: 2px;">Add new assessment</div></div>
+            </div>
+            <div id="btn-monitor-live" class="action-card">
+                <div style="width: 36px; height: 36px; border-radius: 10px; background: #10b981; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #fff;">👁</div>
+                <div><div style="font-size: 14px; font-weight: 600; color: #ffffff;">Monitor Live</div><div style="font-size: 12px; color: #555; margin-top: 2px;">View active sessions</div></div>
+            </div>
+            <div onclick="document.getElementById('analytics-section').scrollIntoView({behavior: 'smooth'})" class="action-card" style="cursor: pointer;">
+                <div style="width: 36px; height: 36px; border-radius: 10px; background: #00d4ff; display: flex; align-items: center; justify-content: center; font-size: 15px; color: #fff;">📊</div>
+                <div><div style="font-size: 14px; font-weight: 600; color: #ffffff;">View Reports</div><div style="font-size: 12px; color: #555; margin-top: 2px;">Session analytics</div></div>
+            </div>
+        </div>
+
+        <!-- LIVE SESSIONS PANEL (Hidden by default) -->
+        <div id="live-sessions-wrapper" class="hidden fade-in">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+                <div style="font-size: 18px; font-weight: 700; color: #ffffff;">Live Student Sessions</div>
+                <div style="display: flex; align-items: center; gap: 8px; background: rgba(224,92,92,0.1); border: 1px solid rgba(224,92,92,0.2); border-radius: 20px; padding: 4px 12px;">
+                    <div style="width: 6px; height: 6px; border-radius: 50%; background: #e05c5c; animation: pulseDot 1.5s infinite;"></div>
+                    <div style="font-size: 12px; font-weight: 700; color: #e05c5c;"><span id="live-active-count">0</span> Active</div>
+                </div>
+                <div style="font-size: 12px; color: #444; font-style: italic; margin-left: auto; display: flex; align-items: center; gap: 6px;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 2s linear infinite;"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg> Updates every 2s
+                </div>
+            </div>
+            <div id="live-sessions-grid" class="grid-live">
+                <!-- Grid items generated by JS -->
+            </div>
+        </div>
+
+        <!-- MANAGE TESTS TABLE -->
+        <div id="manage-tests-section" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 16px; scroll-margin-top: 80px;">
+            <div>
+                <div style="font-size: 18px; font-weight: 700; color: #ffffff;">Manage Tests</div>
+                <div id="manage-tests-desc" style="font-size: 13px; color: #666; margin-top: 2px;">0 tests · 0 active</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 4px; display: flex; gap: 4px;">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="scheduled">Scheduled</button>
+                <button class="filter-btn" data-filter="active">Active</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <div class="table-header">
+                <div class="th-cell">Test Title</div>
+                <div class="th-cell">Subject</div>
+                <div class="th-cell">Scheduled</div>
+                <div class="th-cell">Duration</div>
+                <div class="th-cell">Students</div>
+                <div class="th-cell">Status</div>
+                <div class="th-cell" style="text-align: right;">Actions</div>
+            </div>
+            <div id="table-body">
+                <!-- Rows JS -->
+            </div>
+            <div id="table-empty" class="hidden" style="padding: 60px; text-align: center; display: flex; flex-direction: column; align-items: center;">
+                <div style="font-size: 40px; margin-bottom: 16px;">📋</div>
+                <div id="empty-msg-title" style="font-size: 16px; color: #555; font-weight: 600; margin-bottom: 4px;">No tests found</div>
+                <div style="font-size: 13px; color: #444; margin-bottom: 20px;">Create a new test to get started</div>
+                <button onclick="window.location.href='create-test.html'" class="ghost-btn" style="padding: 8px 16px; font-size: 13px;">+ Create Test</button>
+            </div>
+        </div>
+
+        <!-- ANALYTICS CENTER (ChartJs) -->
+        <div style="margin-bottom: 20px; scroll-margin-top: 80px;" id="analytics-section">
+            <div style="font-size: 18px; font-weight: 700; color: #ffffff;">Analytics Center</div>
+            <div style="font-size: 13px; color: #555; margin-top: 2px;">Based on all sessions for your tests</div>
+        </div>
+        
+        <div class="grid-charts">
+            <div class="chart-card">
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 15px; color: #fff; font-weight: 600;">Violations by Type</div>
+                    <div style="font-size: 12px; color: #555; margin-top: 4px;">Breakdown across all sessions</div>
+                </div>
+                <div class="chart-container"><canvas id="chart-violations"></canvas></div>
+            </div>
+
+            <div class="chart-card">
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 15px; color: #fff; font-weight: 600;">Violations Over Time</div>
+                    <div style="font-size: 12px; color: #555; margin-top: 4px;">Last 12 hours</div>
+                </div>
+                <div class="chart-container"><canvas id="chart-timeline"></canvas></div>
+            </div>
+
+            <div class="chart-card">
+                <div style="margin-bottom: 16px;">
+                    <div style="font-size: 15px; color: #fff; font-weight: 600;">Session Status</div>
+                    <div style="font-size: 12px; color: #555; margin-top: 4px;">Distribution of outcomes</div>
+                </div>
+                <div class="chart-container" style="display: flex; align-items: center;">
+                    <div style="flex: 1.2; position: relative; height: 100%;"><canvas id="chart-pie"></canvas></div>
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #c0c0d8;">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: #f59e0b;"></div><span style="flex: 1;">In Progress</span><span id="pie-stat-prog" style="font-weight: 700; color: #fff;">0</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #c0c0d8;">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></div><span style="flex: 1;">Submitted</span><span id="pie-stat-sub" style="font-weight: 700; color: #fff;">0</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #c0c0d8;">
+                            <div style="width: 8px; height: 8px; border-radius: 50%; background: #e05c5c;"></div><span style="flex: 1;">Flagged</span><span id="pie-stat-flag" style="font-weight: 700; color: #fff;">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Component -->
+    <div id="toast-container"></div>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 id="modal-title" style="margin: 0 0 12px 0; font-size: 20px; color: #fff;">End Test?</h3>
+            <p style="margin: 0 0 24px 0; font-size: 14px; color: #888; line-height: 1.5;">This will mark the test as completed and submit all in-progress sessions. Students will no longer be able to access this test.</p>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button id="btn-modal-cancel" class="ghost-btn" style="padding: 10px 20px; font-size: 13px;">Cancel</button>
+                <button id="btn-modal-confirm" style="background: #e05c5c; border: none; color: #fff; border-radius: 8px; padding: 10px 20px; cursor: pointer; font-size: 13px; font-weight: 600; box-shadow: 0 4px 12px rgba(224,92,92,0.3); font-family: inherit;">End Test</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/mockStore.js"></script>
+    <script src="js/proctor-dashboard.js"></script>
+</body>
+</html>
