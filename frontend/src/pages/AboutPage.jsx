@@ -373,27 +373,15 @@ export default function AboutPage() {
               gradient: 'linear-gradient(90deg, #6352dd, #a78bfa)',
               desc: 'Led the AI and Machine Learning development, implementing the real-time face detection, gaze analysis, and head pose estimation using MediaPipe and OpenCV. Also integrated the AI API for automated MCQ generation.',
               tags: ['Python', 'MediaPipe', 'OpenCV', 'Flask', 'Open-Source LLMs', 'Computer Vision', 'Machine Learning'],
-              // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-              // EDIT: Replace with Rohit's actual photo URL
-              // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-              image: "https://drive.google.com/thumbnail?id=1iqXmFF-IK0yi8XVGTaSF2-Aa0VBVWz0K&sz=w1000",
-              // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-              // EDIT: Replace with Rohit's URLs
-              // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+              image: "/team/rohit.jpeg",
               github: "https://github.com/rohit-singh06", linkedin: "https://www.linkedin.com/in/rohit-singh-69592a293/", email: "https://mail.google.com/mail/?view=cm&fs=1&to=rohitmahargain@gmail.com"
             },
             {
-              name: 'Anushka', role: 'UI/UX Designer', icon: '🎨', color: '#f472b6', colorPrimary: '#ec4899',
+              name: 'Anushka', role: 'Frontend & UI/UX Designer', icon: '🎨', color: '#f472b6', colorPrimary: '#ec4899',
               gradient: 'linear-gradient(90deg, #ec4899, #f472b6)',
-              desc: 'Designed the entire visual identity of IntegriSight — from the dark-themed design system to every pixel of the UI. Responsible for the user experience, layout, responsive design, and creating an interface that feels both powerful and approachable.',
-              tags: ['UI/UX Design', 'Figma', 'CSS', 'Design Systems', 'Prototyping', 'User Research'],
-              // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-              // EDIT: Replace with Anushka's actual photo URL
-              // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-              image: "https://drive.google.com/thumbnail?id=1IqZquiCMDcsW-eG1dJF9r6_oa2bdYEPC&sz=w1000",
-              // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-              // EDIT: Replace with Anushka's URLs
-              // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+              desc: 'Designed the entire visual identity of IntegriSight — from the dark-themed design system to every pixel of the UI. Also handled key frontend development, building React components, routing, and state management to bring the design to life.',
+              tags: ['UI/UX Design', 'React', 'JavaScript', 'CSS', 'Design Systems', 'Frontend Integration'],
+              image: "/team/anushka.jpg",
               github: "https://github.com/AnushkaDandriyal", linkedin: "https://www.linkedin.com/in/anushka-dandriyal-bb0241354/", email: "https://mail.google.com/mail/?view=cm&fs=1&to=anushkadandriyalnush43@gmail.com"
             },
             {
@@ -402,7 +390,7 @@ export default function AboutPage() {
               desc: 'Handled the frontend development and full-stack integration, building all React components, routing, state management, and connecting the Flask AI engine to the React frontend. Ensured the proctoring pipeline worked end-to-end.',
               tags: ['React', 'JavaScript', 'Vite', 'REST APIs', 'React Router', 'Frontend Integration'],
 
-              image: "https://drive.google.com/thumbnail?id=1D8xF12v6MYI29yWxz2NFF5uziPEqR9V9&sz=w1000",
+              image: "/team/kartik.jpg",
 
               github: "https://github.com/kartik2005-sketch", linkedin: "https://www.linkedin.com/in/kartik-mahargaine-02aa09323/", email: "https://mail.google.com/mail/?view=cm&fs=1&to=kartikmahargaine@gmail.com"
             }
