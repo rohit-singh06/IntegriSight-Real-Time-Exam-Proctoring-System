@@ -3,10 +3,11 @@
 .idea/
 .vscode/
 *.log
-
+config.js
 # Environment variables
 .env
 .env.local
+
 
 # Backend
 ai_engine/__pycache__/
