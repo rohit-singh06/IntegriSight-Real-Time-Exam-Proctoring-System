@@ -32,7 +32,7 @@ const INITIAL_DATA = {
 
 async function initStore() {
   try {
-    const res = await fetch('http://localhost:5001/db');
+    const res = await fetch('/api/db');
     if (res.ok) {
         const data = await res.json();
         if (data) {
@@ -47,14 +47,14 @@ async function initStore() {
   if (!exist) {
       localStorage.setItem('integrisight_store_v2', JSON.stringify(INITIAL_DATA));
       try {
-        await fetch('http://localhost:5001/db', {
+        await fetch('/api/db', {
           method: 'POST', headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(INITIAL_DATA)
         });
       } catch(e) {}
   } else {
       try {
-        await fetch('http://localhost:5001/db', {
+        await fetch('/api/db', {
           method: 'POST', headers: {'Content-Type': 'application/json'},
           body: exist
         });
@@ -80,7 +80,7 @@ function saveStore(storeObj) {
   window.dispatchEvent(new Event('integrisight_store_update'));
   
   // async save to backend silently
-  fetch('http://localhost:5001/db', {
+  fetch('/api/db', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: payload

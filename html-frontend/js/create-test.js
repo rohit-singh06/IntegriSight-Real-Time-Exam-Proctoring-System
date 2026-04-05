@@ -1,15 +1,10 @@
-// js/create-test.js
 
 document.addEventListener('DOMContentLoaded', async () => {
     await initStore();
-    // ─────────────────────────────────────────────────────────
-    // 1. STATE & INITIALIZATION
-    // ─────────────────────────────────────────────────────────
     const userStr = localStorage.getItem('integrisight_user');
     if (!userStr) { window.location.href = 'login.html'; return; }
     const user = JSON.parse(userStr);
 
-    // URL Params for Edit Mode
     const urlParams = new URLSearchParams(window.location.search);
     const testId = urlParams.get('id');
     const isEditMode = !!testId;
@@ -17,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let store = getStore();
     let students = store.students || [];
 
-    // Form State
+
     let formData = {
         title: '', subject: user.subject || '', desc: '', inst: '',
         date: '', time: '', duration: 60, marks: 100,
@@ -330,9 +325,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     elements.totalmarks.addEventListener('input', renderQuestions);
 
-    // ─────────────────────────────────────────────────────────
-    // 5. AI GENERATOR LOGIC
-    // ─────────────────────────────────────────────────────────
+
     const toggleAI = (show) => {
         elements.aiOverlay.classList.toggle('active', show);
         elements.aiDrawer.classList.toggle('active', show);
@@ -351,10 +344,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (!topic) { elements.aiErr.textContent = "Specify a topic"; elements.aiErr.classList.remove('hidden'); return; }
         
-        // Setup API Key - using environment mock if not available.
-        // We will hit a generic fallback mock if OpenRouter key is missing.
-        const OPENROUTER_API_KEY = window.CONFIG ? CONFIG.OPENROUTER_API_KEY : "";
-        
+
         elements.aiErr.classList.add('hidden');
         document.getElementById('ai-btn-text').textContent = "Generating...";
         document.getElementById('ai-spinner').classList.remove('hidden');
@@ -367,28 +357,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         Return ONLY valid JSON.`;
 
         const FREE_MODELS = [
-            "meta-llama/llama-3.3-70b-instruct:free",
             "google/gemma-3-27b-it:free",
             "google/gemma-3-12b-it:free",
-            "qwen/qwen3-coder:free",
-            "openai/gpt-oss-120b:free",
-            "nousresearch/hermes-3-llama-3.1-405b:free"
+            "google/gemma-3-4b-it:free",
+            "meta-llama/llama-3.2-3b-instruct:free",
+            "meta-llama/llama-3.3-70b-instruct:free",
+            "mistralai/mistral-7b-instruct:free"
         ];
 
         let success = false;
+        let lastStatus = null;
         let lastError = null;
 
         for (const model of FREE_MODELS) {
             try {
                 console.log(`Trying model: ${model}`);
-                const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                const res = await fetch('/api/questions', {
                     method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": window.location.href,
-                        "X-Title": "IntegriSight Frontend"
-                    },
+                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: model,
                         messages: [
@@ -397,8 +383,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                     })
                 });
 
+                lastStatus = res.status;
+
+                if (res.status === 429) {
+                    console.log(`Model ${model} is rate limited (429), trying next...`);
+                    continue;
+                }
+
                 if (!res.ok) {
-                    console.log(`Model ${model} failed with status: ${res.status}`);
+                    const errBody = await res.text();
+                    console.log(`Model ${model} failed (${res.status}):`, errBody);
                     continue;
                 }
                 
@@ -444,7 +438,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         if (!success) {
-            elements.aiErr.textContent = "AI Generation failed after trying all available models. Please try again.";
+            const isRateLimit = lastStatus === 429;
+            elements.aiErr.textContent = isRateLimit
+                ? "⏳ Free AI models are busy right now. Please wait 30 seconds and try again."
+                : "AI Generation failed after trying all available models. Please try again.";
             elements.aiErr.classList.remove('hidden');
         } else {
             elements.aiErr.classList.add('hidden');

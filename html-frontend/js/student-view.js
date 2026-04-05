@@ -9,8 +9,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
     const user = JSON.parse(userStr);
-    
-    // Extract test ID from URL query param
+
     const urlParams = new URLSearchParams(window.location.search);
     const testId = urlParams.get('id');
     if (!testId) {
@@ -49,28 +48,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     let cameraError = false;
     let agreed = false;
     let apiError = false;
-    
+
     let timeLeft = 0;
     let currentIndex = 0;
     let answers = session.answers || {};
     let recentViolations = [];
-    
+
     const questions = test.questions || [];
-    
+
     // DOM Elements
     const phases = {
         gate: document.getElementById('gate-phase'),
         active: document.getElementById('active-phase'),
         result: document.getElementById('result-phase')
     };
-    
+
     const setPhase = (newPhase) => {
         phase = newPhase;
         Object.keys(phases).forEach(k => {
             if (phases[k]) phases[k].classList.add('hidden');
         });
         if (phases[newPhase]) phases[newPhase].classList.remove('hidden');
-        
+
         if (newPhase === 'gate' || newPhase === 'active') {
             startCamera();
         } else {
@@ -137,7 +136,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             gateStatus.textContent = 'Camera ready';
             gateStatus.style.color = '#10b981';
         }
-        
+
         if (agreed && cameraReady) {
             btnBegin.classList.remove('disabled');
             btnBegin.classList.add('ready');
@@ -161,7 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const updates = { status: 'in_progress', startedAt: new Date().toISOString() };
             updateSession(session.id, updates);
             session = { ...session, ...updates };
-            
+
             timeLeft = test.duration * 60;
             setPhase('active');
             startActivePhase();
@@ -201,9 +200,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(activeVideo, 0, 0, canvas.width, canvas.height);
                 const base64Image = canvas.toDataURL('image/jpeg', 0.8);
-                
+
                 try {
-                    const response = await fetch('http://localhost:5001/analyze', {
+                    const response = await fetch('/analyze', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ frame: base64Image })
@@ -235,7 +234,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const handleApiResult = (result) => {
         if (result.violations && result.violations.length > 0) {
             const nowIso = new Date().toISOString();
-            
+
             const newPills = [];
             result.violations.forEach(v => {
                 let severity = 'low';
@@ -259,7 +258,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
 
             session.riskScore = Math.min(100, session.totalViolations * 5);
-            
+
             updateSession(session.id, {
                 violationCount: session.violationCount,
                 totalViolations: session.totalViolations,
@@ -291,7 +290,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('stat-gaze-away').textContent = session.violationCount.gaze_away || 0;
         document.getElementById('stat-face-hidden').textContent = session.violationCount.face_not_visible || 0;
         document.getElementById('stat-multi-face').textContent = session.violationCount.multiple_faces || 0;
-        
+
         const score = session.riskScore || 0;
         let color = '#10b981';
         if (score > 30) color = '#f59e0b';
@@ -299,7 +298,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         document.getElementById('active-risk-text').textContent = score;
         document.getElementById('active-risk-text').style.color = color;
-        
+
         document.getElementById('active-risk-fill').style.width = `${score}%`;
         document.getElementById('active-risk-fill').style.background = color;
         document.getElementById('active-risk-sm').textContent = score;
@@ -314,7 +313,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             el.className = 'recent-violation-pill fade-in';
             const vTypeMap = { 'gaze_away': '👁 Gaze Away', 'face_not_visible': '🚫 Face Hidden', 'multiple_faces': '👥 Multiple Faces' };
             const vColorMap = { 'gaze_away': '#f59e0b', 'face_not_visible': '#e05c5c', 'multiple_faces': '#e05c5c' };
-            
+
             el.style.color = vColorMap[v.type] || '#fff';
             el.innerHTML = `
                 <span style="flex: 1;">${vTypeMap[v.type] || v.type}</span>
@@ -334,7 +333,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const updateTimerUI = () => {
         const mainTimer = document.getElementById('main-timer');
         mainTimer.textContent = formatTime(timeLeft);
-        
+
         mainTimer.className = 'timer-badge';
         if (timeLeft < 60) mainTimer.classList.add('timer-danger');
         else if (timeLeft < 300) mainTimer.classList.add('timer-warning');
@@ -350,11 +349,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             const isAnswered = answers[q.id] !== undefined;
             const btn = document.createElement('button');
             btn.className = 'q-nav-btn';
-            
+
             if (isCurrent) btn.classList.add('q-btn-current');
             else if (isAnswered) btn.classList.add('q-btn-answered');
             else btn.classList.add('q-btn-unanswered');
-            
+
             btn.textContent = i + 1;
             btn.onclick = () => {
                 currentIndex = i;
@@ -377,7 +376,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Redraw card inner HTML
         let optionsHTML = currentQ.options.map((opt, oIdx) => {
             const isSelected = answers[currentQ.id] === oIdx;
-            const letter = ['A','B','C','D'][oIdx] || oIdx;
+            const letter = ['A', 'B', 'C', 'D'][oIdx] || oIdx;
             return `
                 <div class="opt-row ${isSelected ? 'selected' : 'unselected'}" onclick="selectOption('${currentQ.id}', ${oIdx})">
                     <div class="opt-radio ${isSelected ? 'selected' : 'unselected'}">
@@ -415,7 +414,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('btn-prev-q').disabled = (currentIndex === 0);
         document.getElementById('btn-prev-q').style.color = (currentIndex === 0) ? '#555' : 'white';
         document.getElementById('btn-prev-q').style.cursor = (currentIndex === 0) ? 'default' : 'pointer';
-        
+
         const btnNext = document.getElementById('btn-next-q');
         if (currentIndex < questions.length - 1) {
             btnNext.innerHTML = 'Next &rarr;';
@@ -474,7 +473,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const openReviewModal = () => {
         const answeredCount = Object.keys(answers).length;
         const unCount = questions.length - answeredCount;
-        
+
         document.getElementById('modal-total').textContent = questions.length;
         document.getElementById('modal-answered').textContent = answeredCount;
         document.getElementById('modal-answered').style.color = (answeredCount === questions.length) ? '#10b981' : 'white';
@@ -529,7 +528,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const score = computeAndSaveScore(session.id);
         const updates = { endedAt: new Date().toISOString(), status: 'submitted', score };
         updateSession(session.id, updates);
-        
+
         session = getStore().sessions.find(s => s.id === session.id);
         renderResultData();
         setPhase('result');
@@ -539,13 +538,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         const totalMarks = session.totalMarks || test.totalMarks;
         const score = session.score || 0;
         const percent = Math.round((score / totalMarks) * 100) || 0;
-        
+
         let grade = 'F';
-        if(percent >= 90) grade = 'A+';
-        else if(percent >= 80) grade = 'A';
-        else if(percent >= 70) grade = 'B+';
-        else if(percent >= 60) grade = 'B';
-        else if(percent >= 50) grade = 'C';
+        if (percent >= 90) grade = 'A+';
+        else if (percent >= 80) grade = 'A';
+        else if (percent >= 70) grade = 'B+';
+        else if (percent >= 60) grade = 'B';
+        else if (percent >= 50) grade = 'C';
 
         let correctCount = 0, wrongCount = 0, unattemptedCount = 0;
         questions.forEach(q => {
@@ -558,11 +557,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const color = percent >= 75 ? '#10b981' : percent >= 50 ? '#f59e0b' : '#e05c5c';
 
         document.getElementById('result-time').textContent = `Submitted at ${new Date(session.endedAt).toLocaleTimeString()}`;
-        
+
         const scoreBig = document.getElementById('result-score-big');
         scoreBig.style.color = color;
         scoreBig.innerHTML = `${score} <span style="font-size: 24px; color: #666;">/ ${totalMarks}</span>`;
-        
+
         const percEl = document.getElementById('result-percent');
         percEl.textContent = `${percent}%`;
         percEl.style.color = color;
@@ -576,7 +575,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('res-flags-gaze').textContent = session.violationCount?.gaze_away || 0;
         document.getElementById('res-flags-face').textContent = session.violationCount?.face_not_visible || 0;
         document.getElementById('res-flags-multi').textContent = session.violationCount?.multiple_faces || 0;
-        
+
         const rScore = session.riskScore || 0;
         let rColor = '#10b981';
         if (rScore > 30) rColor = '#f59e0b';
