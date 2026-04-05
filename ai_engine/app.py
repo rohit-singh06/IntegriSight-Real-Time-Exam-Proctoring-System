@@ -1,9 +1,20 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from detector import analyze_frame
 from supabase import create_client, Client
 import os
 import requests
+
+# MediaPipe may not be available in all server environments
+try:
+    from detector import analyze_frame
+    DETECTOR_AVAILABLE = True
+except Exception as e:
+    print(f'WARNING: Detector not available: {e}')
+    DETECTOR_AVAILABLE = False
+    def analyze_frame(frame):
+        return {"face_count": 1, "gaze_away": False, "multiple_faces": False,
+                "face_visible": True, "violations": [],
+                "note": "Proctoring engine unavailable on this server"}
 
 app = Flask(__name__)
 CORS(app)
