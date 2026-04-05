@@ -7,6 +7,7 @@ import base64
 mp_face_mesh = mp.solutions.face_mesh
 # Max num faces set to 10 to detect multiple faces for proctoring
 face_mesh = mp_face_mesh.FaceMesh(
+    static_image_mode=False,
     min_detection_confidence=0.7, 
     min_tracking_confidence=0.7, 
     max_num_faces=10
