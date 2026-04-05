@@ -198,42 +198,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadingSpinner.style.display = 'block';
         btnText.textContent = 'Signing in...';
 
-        setTimeout(() => {
-            const store = getStore();
-            let foundUser = null;
+        setTimeout(async () => {
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password, role })
+                });
 
-            if (role === 'student') {
-                foundUser = store.students.find(s => s.email === email && s.password === password);
-            } else {
-                foundUser = store.proctors.find(p => p.email === email && p.password === password);
-            }
+                const data = await res.json();
 
-            if (foundUser) {
-                const sessionUser = {
-                    id: foundUser.id,
-                    name: foundUser.name,
-                    email: foundUser.email,
-                    role: foundUser.role,
-                    ...(foundUser.role === 'student' ? { enrollmentNo: foundUser.enrollmentNo } : { subject: foundUser.subject })
-                };
-                
-                localStorage.setItem('integrisight_user', JSON.stringify(sessionUser));
-                
-                if (foundUser.role === 'student') {
-                    window.location.href = 'student-dashboard.html';
+                if (res.ok && data.status === 'success') {
+                    // Save to sessionStorage (isolated to this tab)
+                    sessionStorage.setItem('integrisight_user', JSON.stringify(data.user));
+                    
+                    if (data.user.role === 'student') {
+                        window.location.href = 'student-dashboard.html';
+                    } else {
+                        window.location.href = 'proctor-dashboard.html';
+                    }
                 } else {
-                    window.location.href = 'proctor-dashboard.html';
+                    showError(data.message || 'Invalid email or password. Please try again.');
+                    resetBtn();
                 }
-            } else {
-                showError('Invalid email or password. Please try again.');
-                isSubmitting = false;
-                submitBtn.disabled = false;
-                submitBtn.style.cursor = 'pointer';
-                submitBtn.style.boxShadow = '0 4px 24px rgba(99,82,221,0.35), 0 1px 0 rgba(255,255,255,0.1) inset';
-                loadingSpinner.style.display = 'none';
-                btnText.textContent = `Sign in to ${role === 'student' ? 'Student' : 'Proctor'} Portal`;
+            } catch (err) {
+                console.error('Login error:', err);
+                showError('Server connection failed. Please try again later.');
+                resetBtn();
             }
         }, 500);
+
+        function resetBtn() {
+            isSubmitting = false;
+            submitBtn.disabled = false;
+            submitBtn.style.cursor = 'pointer';
+            submitBtn.style.boxShadow = '0 4px 24px rgba(99,82,221,0.35), 0 1px 0 rgba(255,255,255,0.1) inset';
+            loadingSpinner.style.display = 'none';
+            btnText.textContent = `Sign in to ${role === 'student' ? 'Student' : 'Proctor'} Portal`;
+        }
     });
 
     // Initialize UI

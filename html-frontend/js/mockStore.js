@@ -1,6 +1,6 @@
 // js/mockStore.js
 // central data layer for the whole app
-// using localStorage since we don't have a real backend
+// using sessionStorage for tab isolation (Proctor in one tab, Student in another)
 // structure: students, proctors, tests, sessions, violations
 
 const INITIAL_DATA = {
@@ -36,16 +36,16 @@ async function initStore() {
     if (res.ok) {
         const data = await res.json();
         if (data) {
-            localStorage.setItem('integrisight_store_v2', JSON.stringify(data));
+            sessionStorage.setItem('integrisight_store_v2', JSON.stringify(data));
             return;
         }
     }
   } catch(e) { console.error('API /db load failed', e); }
 
   // if no data from API, try local storage, else initialize and POST to API
-  const exist = localStorage.getItem('integrisight_store_v2');
+  const exist = sessionStorage.getItem('integrisight_store_v2');
   if (!exist) {
-      localStorage.setItem('integrisight_store_v2', JSON.stringify(INITIAL_DATA));
+      sessionStorage.setItem('integrisight_store_v2', JSON.stringify(INITIAL_DATA));
       try {
         await fetch('/api/db', {
           method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -63,7 +63,7 @@ async function initStore() {
 }
 
 function getStore() {
-  const storeStr = localStorage.getItem('integrisight_store_v2');
+  const storeStr = sessionStorage.getItem('integrisight_store_v2');
   if (storeStr) {
     try {
       return JSON.parse(storeStr);
@@ -76,7 +76,7 @@ function getStore() {
 
 function saveStore(storeObj) {
   const payload = JSON.stringify(storeObj);
-  localStorage.setItem('integrisight_store_v2', payload);
+  sessionStorage.setItem('integrisight_store_v2', payload);
   window.dispatchEvent(new Event('integrisight_store_update'));
   
   // async save to backend silently

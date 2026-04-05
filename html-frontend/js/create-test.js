@@ -1,7 +1,7 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
     await initStore();
-    const userStr = localStorage.getItem('integrisight_user');
+    const userStr = sessionStorage.getItem('integrisight_user');
     if (!userStr) { window.location.href = 'login.html'; return; }
     const user = JSON.parse(userStr);
 

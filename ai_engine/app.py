@@ -61,6 +61,16 @@ def analyze():
 
 
 # ─── Database (Supabase) ──────────────────────────────────────────────────────
+def scrub_sensitive_data(data):
+    """Remove passwords from students and proctors before sending to frontend."""
+    if not data: return data
+    clean = data.copy()
+    if 'students' in clean:
+        clean['students'] = [{k: v for k, v in s.items() if k != 'password'} for s in clean['students']]
+    if 'proctors' in clean:
+        clean['proctors'] = [{k: v for k, v in p.items() if k != 'password'} for p in clean['proctors']]
+    return clean
+
 @app.route('/api/db', methods=['GET'])
 def get_db():
     try:
@@ -70,8 +80,8 @@ def get_db():
         if not data.get('students'):
             print('Seeding Supabase with initial data...')
             supabase.table('store').upsert({'id': 1, 'data': INITIAL_DATA}).execute()
-            return jsonify(INITIAL_DATA)
-        return jsonify(data)
+            return jsonify(scrub_sensitive_data(INITIAL_DATA))
+        return jsonify(scrub_sensitive_data(data))
     except Exception as e:
         # No row exists yet — create it with initial data
         print(f'DB GET error (seeding fresh): {e}')
@@ -79,18 +89,54 @@ def get_db():
             supabase.table('store').upsert({'id': 1, 'data': INITIAL_DATA}).execute()
         except Exception as seed_err:
             print(f'Seed error: {seed_err}')
-        return jsonify(INITIAL_DATA)
+        return jsonify(scrub_sensitive_data(INITIAL_DATA))
 
 
 @app.route('/api/db', methods=['POST'])
 def save_db():
+    # Note: This tool currently allows full overwrite. In a real app, 
+    # we would merge the data on the server to prevent deleting users/passwords.
     data = request.get_json(silent=True) or {}
     try:
-        supabase.table('store').upsert({'id': 1, 'data': data}).execute()
+        # Fetch existing data to preserve users and passwords
+        curr = supabase.table('store').select('data').eq('id', 1).single().execute()
+        existing = curr.data['data']
+        
+        # Merge incoming changes (tests, sessions, violations) 
+        # but keep existing students/proctors (passwords)
+        existing.update({k: v for k, v in data.items() if k not in ['students', 'proctors']})
+        
+        supabase.table('store').upsert({'id': 1, 'data': existing}).execute()
         return jsonify({"status": "success"})
     except Exception as e:
         print(f'DB POST error: {e}')
         return jsonify({"error": str(e)}), 500
+
+
+# ─── Authentication ──────────────────────────────────────────────────────────
+@app.route('/api/login', methods=['POST'])
+def login():
+    credentials = request.get_json()
+    email = credentials.get('email')
+    password = credentials.get('password')
+    role = credentials.get('role') # 'student' or 'proctor'
+
+    try:
+        result = supabase.table('store').select('data').eq('id', 1).single().execute()
+        data = result.data['data']
+        
+        user_list = data.get('students' if role == 'student' else 'proctors', [])
+        user = next((u for u in user_list if u['email'] == email and u['password'] == password), None)
+        
+        if user:
+            # Return user info without password
+            session_user = {k: v for k, v in user.items() if k != 'password'}
+            return jsonify({"status": "success", "user": session_user})
+        else:
+            return jsonify({"status": "error", "message": "Invalid email or password"}), 401
+            
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 # ─── OpenRouter Proxy (key stays server-side) ─────────────────────────────────

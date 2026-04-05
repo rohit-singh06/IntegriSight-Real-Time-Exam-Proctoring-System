@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     await initStore();
     // Auth Check
-    const userStr = localStorage.getItem('integrisight_user');
+    const userStr = sessionStorage.getItem('integrisight_user');
     if (!userStr) {
         window.location.href = 'login.html';
         return;
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     navAvatar.textContent = getInitials(user.name);
 
     signOutBtn.addEventListener('click', () => {
-        localStorage.removeItem('integrisight_user');
+        sessionStorage.removeItem('integrisight_user');
         window.location.href = 'login.html';
     });
 

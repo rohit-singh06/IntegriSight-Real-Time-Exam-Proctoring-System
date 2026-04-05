@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
     await initStore();
     // 1. Core State & Setup
-    const userStr = localStorage.getItem('integrisight_user');
+    const userStr = sessionStorage.getItem('integrisight_user');
     if (!userStr) {
         window.location.href = 'login.html';
         return;
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('nav-initials').textContent = user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
     
     document.getElementById('btn-logout').addEventListener('click', () => {
-        localStorage.removeItem('integrisight_user');
+        sessionStorage.removeItem('integrisight_user');
         window.location.href = 'login.html';
     });
 
