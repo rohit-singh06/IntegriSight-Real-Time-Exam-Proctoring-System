@@ -65,10 +65,16 @@ def analyze():
 def get_db():
     try:
         result = supabase.table('store').select('data').eq('id', 1).single().execute()
-        return jsonify(result.data['data'])
+        data = result.data['data']
+        # Auto-seed if students are empty (first run with empty Supabase row)
+        if not data.get('students'):
+            print('Seeding Supabase with initial data...')
+            supabase.table('store').upsert({'id': 1, 'data': INITIAL_DATA}).execute()
+            return jsonify(INITIAL_DATA)
+        return jsonify(data)
     except Exception as e:
-        # If no row exists yet, seed with initial data
-        print(f'DB GET error (seeding): {e}')
+        # No row exists yet — create it with initial data
+        print(f'DB GET error (seeding fresh): {e}')
         try:
             supabase.table('store').upsert({'id': 1, 'data': INITIAL_DATA}).execute()
         except Exception as seed_err:
