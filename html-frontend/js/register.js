@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
         setLoading(true);
 
         try {
-            // Send payload directly to our Python backend
-            const response = await fetch('http://localhost:5001/api/register', {
+            // Send payload directly to our Python backend using relative path
+            const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
