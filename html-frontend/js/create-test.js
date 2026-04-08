@@ -357,12 +357,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         Return ONLY valid JSON.`;
 
         const FREE_MODELS = [
-            "google/gemma-3-27b-it:free",
-            "google/gemma-3-12b-it:free",
-            "google/gemma-3-4b-it:free",
-            "meta-llama/llama-3.2-3b-instruct:free",
+            "google/gemini-2.5-flash:free",
+            "google/gemini-2.0-flash-lite-preview-02-05:free",
             "meta-llama/llama-3.3-70b-instruct:free",
-            "mistralai/mistral-7b-instruct:free"
+            "qwen/qwen-2.5-coder-32b-instruct:free",
+            "nvidia/llama-3.1-nemotron-70b-instruct:free",
+            "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
+            "google/gemma-3-27b-it:free"
         ];
 
         let success = false;
