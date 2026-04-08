@@ -356,15 +356,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         Object keys MUST be MUST BE: "question" (str), "options" (array of exactly 4 str), "correct" (int 0-3 index), "explanation" (str), "difficulty" ("easy", "medium", "hard").
         Return ONLY valid JSON.`;
 
-        const FREE_MODELS = [
-            "google/gemini-2.5-flash:free",
-            "google/gemini-2.0-flash-lite-preview-02-05:free",
-            "meta-llama/llama-3.3-70b-instruct:free",
-            "qwen/qwen-2.5-coder-32b-instruct:free",
-            "nvidia/llama-3.1-nemotron-70b-instruct:free",
-            "cognitivecomputations/dolphin3.0-r1-mistral-24b:free",
-            "google/gemma-3-27b-it:free"
-        ];
+        let FREE_MODELS = [];
+        try {
+            const mRes = await fetch("https://openrouter.ai/api/v1/models");
+            const mData = await mRes.json();
+            FREE_MODELS = mData.data.filter(m => m.id.endsWith(":free")).map(m => m.id);
+            // Shuffle to spread rate limits
+            FREE_MODELS = FREE_MODELS.sort(() => 0.5 - Math.random()).slice(0, 8); 
+        } catch(e) {
+            console.error("Failed to fetch dynamic models", e);
+            FREE_MODELS = ["google/gemini-2.0-flash-exp:free", "meta-llama/llama-3-8b-instruct:free"];
+        }
 
         let success = false;
         let lastStatus = null;
