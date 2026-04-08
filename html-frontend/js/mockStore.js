@@ -49,14 +49,14 @@ async function initStore() {
       try {
         await fetch('/api/db', {
           method: 'POST', headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(INITIAL_DATA)
+          body: JSON.stringify(INITIAL_DATA), keepalive: true
         });
       } catch(e) {}
   } else {
       try {
         await fetch('/api/db', {
           method: 'POST', headers: {'Content-Type': 'application/json'},
-          body: exist
+          body: exist, keepalive: true
         });
       } catch(e) {}
   }
@@ -83,7 +83,8 @@ function saveStore(storeObj) {
   fetch('/api/db', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: payload
+      body: payload,
+      keepalive: true
   }).catch(e => console.error('Failed to save to backend', e));
 }
 

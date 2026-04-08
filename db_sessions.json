@@ -1,0 +1,26 @@
+[
+  {
+    "id": "sess_1775631463289",
+    "test_id": "test_1775631304101",
+    "student_id": "s895398",
+    "proctor_id": "p1",
+    "started_at": "2026-04-08T06:57:55.600Z",
+    "ended_at": "2026-04-08T07:12:23.422Z",
+    "status": "submitted",
+    "score": 0,
+    "total_marks": 0,
+    "risk_score": 0,
+    "violation_count": {
+      "gaze_away": 0,
+      "multiple_faces": 0,
+      "face_not_visible": 0
+    },
+    "total_violations": 0,
+    "answers": {
+      "q_1775631216372_v36fk1": 3,
+      "q_1775631216373_7h65h7": 2,
+      "q_1775631216373_h3vfpg": 0,
+      "q_1775631216373_tddv0h": 0
+    }
+  }
+]

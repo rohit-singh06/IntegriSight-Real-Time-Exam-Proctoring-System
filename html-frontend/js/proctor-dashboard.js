@@ -78,11 +78,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         const sessions = store.sessions.filter(s => testIds.includes(s.testId));
         const violations = store.violations.filter(v => testIds.includes(v.testId));
 
+        const getOrganicStatus = (t) => {
+            if (t.status === 'completed') return 'completed';
+            const scheduledMs = new Date(t.scheduledAt).getTime();
+            const endMs = scheduledMs + (t.duration || 60) * 60000;
+            const now = Date.now();
+            if (now >= endMs) return 'completed';
+            if (now >= scheduledMs) return 'active';
+            return 'scheduled';
+        };
+        tests.forEach(t => t.organicStatus = getOrganicStatus(t));
+
         // Derived Stats
         const totalTests = tests.length;
-        const activeTests = tests.filter(t => t.status === 'active').length;
-        const scheduledCount = tests.filter(t => t.status === 'scheduled').length;
-        const completedCount = tests.filter(t => t.status === 'completed').length;
+        const activeTests = tests.filter(t => t.organicStatus === 'active').length;
+        const scheduledCount = tests.filter(t => t.organicStatus === 'scheduled').length;
+        const completedCount = tests.filter(t => t.organicStatus === 'completed').length;
         
         const uniqueStudents = new Set();
         tests.forEach(t => t.assignedStudents.forEach(sid => uniqueStudents.add(sid)));
@@ -138,7 +149,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const riskGradient = sess.riskScore > 60 ? 'linear-gradient(90deg, #e05c5c, #f87171)' : (sess.riskScore > 30 ? 'linear-gradient(90deg, #f59e0b, #fbbf24)' : 'linear-gradient(90deg, #10b981, #34d399)');
 
                 return `
-                <div style="background: ${isFlagged ? 'rgba(224,92,92,0.04)' : 'rgba(255,255,255,0.04)'}; border: 1px solid ${isFlagged ? 'rgba(224,92,92,0.35)' : 'rgba(255,255,255,0.08)'}; border-radius: 14px; padding: 20px;" class="table-row">
+                <div style="background: ${isFlagged ? 'rgba(224,92,92,0.04)' : 'rgba(255,255,255,0.04)'}; border: 1px solid ${isFlagged ? 'rgba(224,92,92,0.35)' : 'rgba(255,255,255,0.08)'}; border-radius: 14px; padding: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #6352dd, #8b5cf6); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center;">${initials}</div>
@@ -183,7 +194,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Manage Tests Table
-        const filteredTests = tests.filter(t => currentFilter === 'all' || t.status === currentFilter);
+        const filteredTests = tests.filter(t => currentFilter === 'all' || t.organicStatus === currentFilter);
         document.getElementById('manage-tests-desc').textContent = `${tests.length} tests · ${activeTests} active`;
 
         if (filteredTests.length === 0) {
@@ -195,15 +206,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('table-body').innerHTML = filteredTests.map((t) => {
                 
                 let actionHTML = '';
-                if (t.status === 'active') {
+                if (t.organicStatus === 'active') {
                     actionHTML = `
                         <button onclick="event.stopPropagation(); window.location.href='proctor-test-monitor.html?id=${t.id}'" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #10b981; border-radius: 6px; height: 30px; padding: 0 12px; font-size: 12px; cursor: pointer; font-weight: 600;">Monitor</button>
                         <button onclick="event.stopPropagation(); triggerEndTest('${t.id}', '${t.title}')" style="background: rgba(224,92,92,0.08); border: 1px solid rgba(224,92,92,0.2); color: #e05c5c; border-radius: 6px; height: 30px; padding: 0 12px; font-size: 12px; cursor: pointer; font-weight: 600;">End Test</button>
                     `;
-                } else if (t.status === 'scheduled') {
+                } else if (t.organicStatus === 'scheduled') {
                     actionHTML = `
                         <button class="ghost-btn" style="height: 30px; padding: 0 12px; font-size: 12px;" onclick="event.stopPropagation(); window.location.href='create-test.html?id=${t.id}'">Edit</button>
-                        <button onclick="event.stopPropagation(); triggerActivateTest('${t.id}')" style="background: rgba(99,82,221,0.1); border: 1px solid rgba(99,82,221,0.25); color: #a78bfa; border-radius: 6px; height: 30px; padding: 0 12px; font-size: 12px; cursor: pointer; font-weight: 600;">Activate</button>
                     `;
                 } else {
                     actionHTML = `
@@ -212,14 +222,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 }
 
                 let badgeHTML = '';
-                if (t.status === 'scheduled') badgeHTML = `<span style="background: rgba(99,82,221,0.1); border: 1px solid rgba(99,82,221,0.25); color: #a78bfa; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700;">SCHEDULED</span>`;
-                else if (t.status === 'active') badgeHTML = `<span style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #10b981; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; display: inline-flex; align-items:center; gap: 6px;"><div style="width: 4px; height: 4px; border-radius: 50%; background: #10b981; animation: pulseDot 1.5s infinite;"></div> LIVE</span>`;
+                if (t.organicStatus === 'scheduled') badgeHTML = `<span style="background: rgba(99,82,221,0.1); border: 1px solid rgba(99,82,221,0.25); color: #a78bfa; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700;">SCHEDULED</span>`;
+                else if (t.organicStatus === 'active') badgeHTML = `<span style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); color: #10b981; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; display: inline-flex; align-items:center; gap: 6px;"><div style="width: 4px; height: 4px; border-radius: 50%; background: #10b981; animation: pulseDot 1.5s infinite;"></div> LIVE</span>`;
                 else badgeHTML = `<span style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #555; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 700;">COMPLETED</span>`;
 
                 return `
                 <div class="table-row">
                     <div style="display: flex; align-items: center; gap: 10px;">
-                        <div style="width: 3px; height: 32px; border-radius: 2px; background: ${t.status === 'scheduled' ? '#6352dd' : (t.status === 'active' ? '#10b981' : 'rgba(255,255,255,0.15)')};"></div>
+                        <div style="width: 3px; height: 32px; border-radius: 2px; background: ${t.organicStatus === 'scheduled' ? '#6352dd' : (t.organicStatus === 'active' ? '#10b981' : 'rgba(255,255,255,0.15)')};"></div>
                         <div>
                             <div style="font-size: 15px; color: #fff; font-weight: 600; display: flex; align-items: center; gap: 8px;">
                                 ${t.title}
@@ -361,11 +371,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // Global Wrapper Functions
-    window.triggerActivateTest = (id) => {
-        updateTest(id, { status: 'active' });
-        showToast('Test activated!');
-        renderAll();
-    };
 
     window.triggerEndTest = (id, title) => {
         confirmActionData = { id, newStatus: 'completed', title };
