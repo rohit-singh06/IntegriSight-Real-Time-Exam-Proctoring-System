@@ -60,9 +60,8 @@ def analyze():
     return jsonify(result)
 
 
-# ─── Database (Supabase) ──────────────────────────────────────────────────────
+# ─── Database (Supabase Multi-Table Architecture) ────────────────────────────
 def scrub_sensitive_data(data):
-    """Remove passwords from students and proctors before sending to frontend."""
     if not data: return data
     clean = data.copy()
     if 'students' in clean:
@@ -71,65 +70,172 @@ def scrub_sensitive_data(data):
         clean['proctors'] = [{k: v for k, v in p.items() if k != 'password'} for p in clean['proctors']]
     return clean
 
+# Mapping helpers because Postgres lowercases unquoted columns and uses snake_case, 
+# but the Javascript frontend expects strict camelCase.
+def to_pg_user(u):
+    return {
+        'id': u.get('id'), 'name': u.get('name'), 'email': u.get('email'),
+        'password': u.get('password'), 'role': u.get('role'),
+        'enrollmentno': u.get('enrollmentNo'), 'subject': u.get('subject')
+    }
+
+def from_pg_user(u):
+    return {
+        'id': u.get('id'), 'name': u.get('name'), 'email': u.get('email'),
+        'password': u.get('password'), 'role': u.get('role'),
+        'enrollmentNo': u.get('enrollmentno'), 'subject': u.get('subject')
+    }
+
+def to_pg_test(t):
+    return {
+        'id': t.get('id'), 'title': t.get('title'), 'description': t.get('description'),
+        'duration': t.get('duration'), 'status': t.get('status'),
+        'createdby': t.get('createdBy'), 'scheduledat': t.get('scheduledAt'),
+        'assignedstudents': t.get('assignedStudents'), 'instructions': t.get('instructions')
+    }
+
+def from_pg_test(t):
+    return {
+        'id': t.get('id'), 'title': t.get('title'), 'description': t.get('description'),
+        'duration': t.get('duration'), 'status': t.get('status'),
+        'createdBy': t.get('createdby'), 'scheduledAt': t.get('scheduledat'),
+        'assignedStudents': t.get('assignedstudents'), 'instructions': t.get('instructions')
+    }
+
+def to_pg_session(s):
+    return {
+        'id': s.get('id'), 'status': s.get('status'), 'score': s.get('score'),
+        'test_id': s.get('testId'), 'student_id': s.get('studentId'), 'proctor_id': s.get('proctorId'),
+        'started_at': s.get('startedAt'), 'ended_at': s.get('endedAt'),
+        'total_marks': s.get('totalMarks'), 'risk_score': s.get('riskScore'),
+        'violation_count': s.get('violationCount'), 'total_violations': s.get('totalViolations'),
+        'answers': s.get('answers')
+    }
+
+def from_pg_session(s):
+    return {
+        'id': s.get('id'), 'status': s.get('status'), 'score': s.get('score'),
+        'testId': s.get('test_id'), 'studentId': s.get('student_id'), 'proctorId': s.get('proctor_id'),
+        'startedAt': s.get('started_at'), 'endedAt': s.get('ended_at'),
+        'totalMarks': s.get('total_marks'), 'riskScore': s.get('risk_score'),
+        'violationCount': s.get('violation_count'), 'totalViolations': s.get('total_violations'),
+        'answers': s.get('answers')
+    }
+
+def to_pg_violation(v):
+    return {
+        'id': v.get('id'), 'type': v.get('type'), 'timestamp': v.get('timestamp'), 'severity': v.get('severity'),
+        'session_id': v.get('sessionId'), 'test_id': v.get('testId'), 'student_id': v.get('studentId')
+    }
+
+def from_pg_violation(v):
+    return {
+        'id': v.get('id'), 'type': v.get('type'), 'timestamp': v.get('timestamp'), 'severity': v.get('severity'),
+        'sessionId': v.get('session_id'), 'testId': v.get('test_id'), 'studentId': v.get('student_id')
+    }
+
+def seed_and_return_db():
+    print('Seeding Supabase users table...')
+    try:
+        users = [to_pg_user(u) for u in INITIAL_DATA['students'] + INITIAL_DATA['proctors']]
+        supabase.table('users').upsert(users).execute()
+    except Exception as e:
+        print(f'Seed error: {e}')
+    return jsonify(scrub_sensitive_data(INITIAL_DATA))
+
 @app.route('/api/db', methods=['GET'])
 def get_db():
     try:
-        result = supabase.table('store').select('data').eq('id', 1).single().execute()
-        data = result.data['data']
-        # Auto-seed if students are empty (first run with empty Supabase row)
-        if not data.get('students'):
-            print('Seeding Supabase with initial data...')
-            supabase.table('store').upsert({'id': 1, 'data': INITIAL_DATA}).execute()
-            return jsonify(scrub_sensitive_data(INITIAL_DATA))
+        users_res = supabase.table('users').select('*').execute()
+        tests_res = supabase.table('tests').select('*').execute()
+        questions_res = supabase.table('questions').select('*').execute()
+        sessions_res = supabase.table('sessions').select('*').execute()
+        violations_res = supabase.table('violations').select('*').execute()
+        
+        users_raw = users_res.data if users_res and hasattr(users_res, 'data') else []
+        users = [from_pg_user(u) for u in users_raw]
+        students = [u for u in users if u.get('role') == 'student']
+        proctors = [u for u in users if u.get('role') == 'proctor']
+        
+        tests_raw = tests_res.data if tests_res and hasattr(tests_res, 'data') else []
+        tests = [from_pg_test(t) for t in tests_raw]
+        questions = questions_res.data if questions_res and hasattr(questions_res, 'data') else []
+        
+        for test in tests:
+            test['questions'] = [q for q in questions if q.get('test_id') == test.get('id')]
+            
+        sessions_raw = sessions_res.data if sessions_res and hasattr(sessions_res, 'data') else []
+        violations_raw = violations_res.data if violations_res and hasattr(violations_res, 'data') else []
+            
+        data = {
+            "students": students,
+            "proctors": proctors,
+            "tests": tests,
+            "sessions": [from_pg_session(s) for s in sessions_raw],
+            "violations": [from_pg_violation(v) for v in violations_raw]
+        }
+        
+        if not students:
+            return seed_and_return_db()
+            
         return jsonify(scrub_sensitive_data(data))
     except Exception as e:
-        # No row exists yet — create it with initial data
-        print(f'DB GET error (seeding fresh): {e}')
-        try:
-            supabase.table('store').upsert({'id': 1, 'data': INITIAL_DATA}).execute()
-        except Exception as seed_err:
-            print(f'Seed error: {seed_err}')
+        print(f'DB GET error: {e}')
         return jsonify(scrub_sensitive_data(INITIAL_DATA))
-
 
 @app.route('/api/db', methods=['POST'])
 def save_db():
-    # Note: This tool currently allows full overwrite. In a real app, 
-    # we would merge the data on the server to prevent deleting users/passwords.
     data = request.get_json(silent=True) or {}
     try:
-        # Fetch existing data to preserve users and passwords
-        curr = supabase.table('store').select('data').eq('id', 1).single().execute()
-        existing = curr.data['data']
+        tests = data.get('tests', [])
+        test_records = []
+        questions = []
         
-        # Merge incoming changes (tests, sessions, violations) 
-        # but keep existing students/proctors (passwords)
-        existing.update({k: v for k, v in data.items() if k not in ['students', 'proctors']})
-        
-        supabase.table('store').upsert({'id': 1, 'data': existing}).execute()
+        for t in tests:
+            # Note: q['correct_idx'] was stored as 'correct' in frontend originally maybe?
+            # Looking at db.json: yes, frontend uses 'correct' for the integer index.
+            # So map frontend 'correct' to Postgres 'correct_idx'.
+            for q in t.get('questions', []):
+                q_rec = q.copy()
+                q_rec['test_id'] = t['id']
+                if 'correct' in q_rec:
+                    q_rec['correct_idx'] = q_rec.pop('correct')
+                questions.append(q_rec)
+                
+            test_records.append(to_pg_test(t))
+                
+        if test_records:
+            supabase.table('tests').upsert(test_records).execute()
+        if questions:
+            supabase.table('questions').upsert(questions).execute()
+            
+        sessions = data.get('sessions', [])
+        if sessions:
+            supabase.table('sessions').upsert([to_pg_session(s) for s in sessions]).execute()
+            
+        violations = data.get('violations', [])
+        if violations:
+            supabase.table('violations').upsert([to_pg_violation(v) for v in violations]).execute()
+            
         return jsonify({"status": "success"})
     except Exception as e:
         print(f'DB POST error: {e}')
         return jsonify({"error": str(e)}), 500
 
-
-# ─── Authentication ──────────────────────────────────────────────────────────
+# ─── Authentication (Relational Query) ────────────────────────────────────────
 @app.route('/api/login', methods=['POST'])
 def login():
     credentials = request.get_json()
     email = credentials.get('email')
     password = credentials.get('password')
-    role = credentials.get('role') # 'student' or 'proctor'
+    role = credentials.get('role')
 
     try:
-        result = supabase.table('store').select('data').eq('id', 1).single().execute()
-        data = result.data['data']
+        res = supabase.table('users').select('*').eq('email', email).eq('role', role).execute()
+        users_raw = res.data if res and hasattr(res, 'data') else []
         
-        user_list = data.get('students' if role == 'student' else 'proctors', [])
-        user = next((u for u in user_list if u['email'] == email and u['password'] == password), None)
-        
-        if user:
-            # Return user info without password
+        if users_raw and users_raw[0].get('password') == password:
+            user = from_pg_user(users_raw[0])
             session_user = {k: v for k, v in user.items() if k != 'password'}
             return jsonify({"status": "success", "user": session_user})
         else:
