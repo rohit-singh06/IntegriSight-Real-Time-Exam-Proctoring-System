@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntegriSight - Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/login.css">
+    <style>
+        .conditional-field {
+            display: none;
+            animation: fadeSlideUp 0.3s ease forwards;
+        }
+        .conditional-field.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <!-- LEFT PANEL -->
+        <div class="login-left-panel">
+            <div id="radial-glow-left"></div>
+            <div class="blob-1"></div>
+            <div class="blob-2"></div>
+            <div id="dot-grid"></div>
+
+            <div id="shape-1" class="shape-1-container">
+                <div class="shape-1-inner"></div>
+            </div>
+            <div class="shape-2"></div>
+            <div class="shape-3"></div>
+            <div class="shape-4"></div>
+            <div class="shape-5">
+                <svg viewBox="0 0 100 100">
+                    <polygon points="50 1 93 25 93 75 50 99 7 75 7 25" />
+                </svg>
+            </div>
+
+            <!-- Layer 5 - Panel content -->
+            <div class="panel-content">
+                <div class="brand-header">
+                    <div class="brand-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                    </div>
+                    <div class="brand-title">IntegriSight</div>
+                </div>
+
+                <div class="hero-section">
+                    <div class="hero-heading">
+                        <div class="hero-line-1">Join the.</div>
+                        <div class="hero-line-2">Future of.</div>
+                        <div class="hero-line-3">Assessments.</div>
+                    </div>
+
+                    <div class="hero-subtitle">
+                        Create an account to experience secure, AI-powered examination environments tailored for global integrity.
+                    </div>
+
+                    <div class="hero-pills">
+                        <div class="pill">
+                            <div class="pill-dot green"></div>Secure Registration
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL - REGISTRATION FORM -->
+        <div id="right-panel" class="login-right-panel">
+            <div id="cursor-spotlight" class="cursor-blob"></div>
+
+            <div id="tilt-card" class="login-card">
+                <div class="form-header">
+                    <div class="form-header-inner">
+                        <div>
+                            <div class="form-title">Create an account</div>
+                            <div class="form-subtitle">Register to access your portal</div>
+                        </div>
+                        <div class="form-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="#6352dd" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H5c-1.1 0-2 .9-2 2v2"></path>
+                                <circle cx="8.5" cy="7" r="4"></circle>
+                                <polyline points="17 11 19 13 23 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <form id="register-form" autocomplete="off">
+                    
+                    <!-- Full Name Field -->
+                    <div class="input-wrapper">
+                        <label class="input-label">Full Name</label>
+                        <div class="input-container">
+                            <div class="input-icon-container">
+                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                            <input type="text" id="name-input" class="form-input" placeholder="John Doe" required />
+                        </div>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="input-wrapper">
+                        <label class="input-label">Email address</label>
+                        <div class="input-container">
+                            <div class="input-icon-container">
+                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                                    <polyline points="22,6 12,13 2,6" />
+                                </svg>
+                            </div>
+                            <input type="email" id="email-input" class="form-input" placeholder="name@example.com" required />
+                        </div>
+                    </div>
+
+                    <!-- Enrollment Number (Mandatory for Student) -->
+                    <div class="input-wrapper" id="enrollment-wrapper">
+                        <label class="input-label">Enrollment Number</label>
+                        <div class="input-container">
+                            <div class="input-icon-container">
+                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                            </div>
+                            <input type="text" id="enrollment-input" class="form-input" placeholder="e.g. 2319451" required />
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="input-wrapper">
+                        <label class="input-label">Password</label>
+                        <div class="input-container">
+                            <div class="input-icon-container">
+                                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                </svg>
+                            </div>
+                            <input type="password" id="password-input" class="form-input" placeholder="••••••••" required />
+                        </div>
+                    </div>
+
+                    <!-- Error Message -->
+                    <div id="error-message">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <span id="error-text"></span>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submit-btn" style="margin-top: 12px;">
+                        <div class="btn-shimmer-layer"></div>
+                        <div id="loading-spinner"></div>
+                        <span id="btn-text">Create Account</span>
+                    </button>
+                </form>
+
+                 <!-- Return Link -->
+                 <div class="register-link-container">
+                    Already have an account? <a href="/login.html">Sign in here</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="js/register.js"></script>
+</body>
+</html>

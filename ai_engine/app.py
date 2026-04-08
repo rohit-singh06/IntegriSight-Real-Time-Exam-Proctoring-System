@@ -244,6 +244,33 @@ def login():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    email = data.get('email')
+    
+    # Security: Force external registrations to ALWAYS be 'student'
+    data['role'] = 'student'
+    data['subject'] = None
+    
+    try:
+        # Check if user email already exists
+        check_res = supabase.table('users').select('id').eq('email', email).execute()
+        existing_users = check_res.data if check_res and hasattr(check_res, 'data') else []
+        
+        if existing_users:
+            return jsonify({"status": "error", "message": "Email already registered"}), 400
+            
+        # Insert the new user
+        new_user_pg = to_pg_user(data)
+        supabase.table('users').insert(new_user_pg).execute()
+        
+        # Return success (frontend handles redirect to login)
+        return jsonify({"status": "success"})
+        
+    except Exception as e:
+        print(f'Registration error: {e}')
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 # ─── OpenRouter Proxy (key stays server-side) ─────────────────────────────────
 @app.route('/api/questions', methods=['POST'])
